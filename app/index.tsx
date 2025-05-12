@@ -1,23 +1,26 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
-import { authContext } from './Context/authContext'
+import { useAuth } from './Context/authContext';
 
 export default function Index() {
-  const [username, setUsername] = useState('');
+  const [email, setemail] = useState('');
   const [password, setPassword] = useState('');
   const router = useRouter();
+  const { login } = useAuth();
 
   const handleLogin = async () => {
-    const { isValid, message } = authContext({ username, password });
+    const message = login(email, password);
 
-    if (!isValid) {
+    if (message) {
       Alert.alert('Erro', message);
       return;
     }
 
-    router.push('/telas/perfil');
-    //console.log('Login bem-sucedido', { username, password });
+    router.push({
+      pathname: '/telas/perfil',
+      params: { email },
+    });
   };
 
   return (
@@ -27,10 +30,10 @@ export default function Index() {
 
         <TextInput
           style={styles.input}
-          placeholder="Usuário"
+          placeholder="Email"
           placeholderTextColor="#bbb"
-          value={username}
-          onChangeText={setUsername}
+          value={email}
+          onChangeText={setemail}
         />
 
         <TextInput
@@ -57,7 +60,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-
   painel_login: {
     width: '80%',
     height: '60%',
@@ -69,7 +71,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 20,
   },
-
   texto: {
     justifyContent: 'space-between',
     alignItems: 'baseline',
@@ -77,7 +78,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginBottom: 20,
   },
-
   input: {
     width: '100%',
     height: 45,
@@ -88,7 +88,6 @@ const styles = StyleSheet.create({
     color: '#333',
     fontSize: 16,
   },
-
   button: {
     width: '100%',
     height: 45,
@@ -97,7 +96,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-
   buttonText: {
     color: '#fff',
     fontSize: 18,
